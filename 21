@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Household Trading App</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+        <h1 class="text-3xl font-bold text-center mb-8">Household Task Trading</h1>
+
+        <!-- Task list -->
+        <div class="grid grid-cols-2 gap-4 mb-8">
+            <!-- Dishwashing Section -->
+            <div class="bg-white p-4 rounded shadow">
+                <h2 class="text-xl font-semibold">Dishwashing</h2>
+                <div class="flex justify-between items-center mt-4">
+                    <button id="buy-dishes" class="bg-blue-500 text-white px-4 py-2 rounded">Buy</button>
+                    <button id="sell-dishes" class="bg-red-500 text-white px-4 py-2 rounded">Sell</button>
+                </div>
+            </div>
+
+            <!-- House Cleaning Section -->
+            <div class="bg-white p-4 rounded shadow">
+                <h2 class="text-xl font-semibold">House Cleaning</h2>
+                <div class="flex justify-between items-center mt-4">
+                    <button id="buy-cleaning" class="bg-blue-500 text-white px-4 py-2 rounded">Buy</button>
+                    <button id="sell-cleaning" class="bg-red-500 text-white px-4 py-2 rounded">Sell</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trading History -->
+        <div class="bg-white p-4 rounded shadow mb-8">
+            <h2 class="text-xl font-semibold">Trading History</h2>
+            <ul id="trading-history" class="list-disc list-inside mt-4">
+                <!-- History will be dynamically added here -->
+            </ul>
+        </div>
+
+        <!-- Chart Section -->
+        <div class="bg-white p-4 rounded shadow">
+            <h2 class="text-xl font-semibold">Price Chart</h2>
+            <canvas id="priceChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+
+    <script>
+        let dishPrice = 100; // Initial price for dishwashing
+        let cleaningPrice = 100; // Initial price for cleaning
+        const priceHistory = {
+            dishes: [dishPrice],
+            cleaning: [cleaningPrice]
+        };
+
+        // Elements
+        const tradingHistory = document.getElementById('trading-history');
+        const priceChart = document.getElementById('priceChart').getContext('2d');
+
+        // Chart.js setup
+        const chart = new Chart(priceChart, {
+            type: 'line',
+            data: {
+                labels: ['0'],
+                datasets: [
+                    {
+                        label: 'Dishwashing Price',
+                        data: priceHistory.dishes,
+                        borderColor: 'blue',
+                        fill: false,
+                    },
+                    {
+                        label: 'Cleaning Price',
+                        data: priceHistory.cleaning,
+                        borderColor: 'red',
+                        fill: false,
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                    },
+                    y: {
+                        beginAtZero: true,
+                    }
+                }
+            }
+        });
+
+        // Update price chart
+        function updateChart() {
+            chart.data.labels.push(priceHistory.dishes.length.toString());
+            chart.update();
+        }
+
+        // Add trade to history
+        function addTrade(task, action, price) {
+            const li = document.createElement('li');
+            li.textContent = `${task} ${action} at $${price}`;
+            tradingHistory.appendChild(li);
+        }
+
+        // Buy and sell actions
+        document.getElementById('buy-dishes').addEventListener('click', () => {
+            dishPrice += 10;
+            priceHistory.dishes.push(dishPrice);
+            addTrade('Dishwashing', 'bought', dishPrice);
+            updateChart();
+        });
+
+        document.getElementById('sell-dishes').addEventListener('click', () => {
+            dishPrice -= 10;
+            priceHistory.dishes.push(dishPrice);
+            addTrade('Dishwashing', 'sold', dishPrice);
+            updateChart();
+        });
+
+        document.getElementById('buy-cleaning').addEventListener('click', () => {
+            cleaningPrice += 10;
+            priceHistory.cleaning.push(cleaningPrice);
+            addTrade('Cleaning', 'bought', cleaningPrice);
+            updateChart();
+        });
+
+        document.getElementById('sell-cleaning').addEventListener('click', () => {
+            cleaningPrice -= 10;
+            priceHistory.cleaning.push(cleaningPrice);
+            addTrade('Cleaning', 'sold', cleaningPrice);
+            updateChart();
+        });
+    </script>
+</body>
+</html>
